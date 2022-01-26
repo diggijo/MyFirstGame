@@ -5,14 +5,15 @@ using UnityEngine;
 
 public class CharacterController : MonoBehaviour
 {
-    public float characterSpeed;
-    public float walkSpeed = 4f;
-    public float runSpeed = 10f;
+    private float characterSpeed;
+    private float walkSpeed = 3f;
+    private float runSpeed = 6f;
+    Animator characterAnimator;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        characterAnimator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -26,7 +27,7 @@ public class CharacterController : MonoBehaviour
         float xDirection = Input.GetAxis("Horizontal");
         float zDirection = Input.GetAxis("Vertical");
 
-        Vector3 moveDirection = new Vector3(xDirection, 0.0f, zDirection);
+        Vector3 moveDirection = new Vector3(xDirection, 0, zDirection);
 
         if(moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift))
         {
@@ -47,16 +48,21 @@ public class CharacterController : MonoBehaviour
 
     private void Idle()
     {
-
+        characterAnimator.SetBool("isWalking", false);
+        characterAnimator.SetBool("isRunning", false);
     }
 
     private void Run()
     {
         characterSpeed = runSpeed;
+        characterAnimator.SetBool("isRunning", true);
+        characterAnimator.SetBool("isWalking", false);
     }
 
     private void Walk()
     {
         characterSpeed = walkSpeed;
+        characterAnimator.SetBool("isRunning", false);
+        characterAnimator.SetBool("isWalking", true);
     }
 }
