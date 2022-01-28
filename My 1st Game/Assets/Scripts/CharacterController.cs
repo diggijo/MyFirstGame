@@ -9,11 +9,13 @@ public class CharacterController : MonoBehaviour
     private float walkSpeed = 3f;
     private float runSpeed = 6f;
     Animator characterAnimator;
+    Rigidbody rb;
 
     // Start is called before the first frame update
     void Start()
     {
         characterAnimator = GetComponentInChildren<Animator>();
+        rb = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -47,13 +49,46 @@ public class CharacterController : MonoBehaviour
             Idle();
         }
 
+        if(Input.GetMouseButton(0))
+        {
+            Attack();
+        }
+
+        if(Input.GetMouseButton(1))
+        {
+            Defend();
+        }
+
         transform.position += characterSpeed * moveDirection * Time.deltaTime;
+
+        if(Input.GetButtonDown("Jump"))
+        {
+            Jump();
+        }
+        
+    }
+
+    private void Jump()
+    {
+        rb.AddForce(new Vector3(0, 5, 0), ForceMode.Impulse);
+    }
+
+    private void Defend()
+    {
+        characterAnimator.SetBool("isDefending", true);
+    }
+
+    private void Attack()
+    {
+        characterAnimator.SetBool("isAttacking", true);
     }
 
     private void Idle()
     {
         characterAnimator.SetBool("isWalking", false);
         characterAnimator.SetBool("isRunning", false);
+        characterAnimator.SetBool("isDefending", false);
+        characterAnimator.SetBool("isAttacking", false);
     }
 
     private void Run()
@@ -61,6 +96,8 @@ public class CharacterController : MonoBehaviour
         characterSpeed = runSpeed;
         characterAnimator.SetBool("isRunning", true);
         characterAnimator.SetBool("isWalking", false);
+        characterAnimator.SetBool("isDefending", false);
+        characterAnimator.SetBool("isAttacking", false);
     }
 
     private void Walk()
@@ -68,5 +105,7 @@ public class CharacterController : MonoBehaviour
         characterSpeed = walkSpeed;
         characterAnimator.SetBool("isRunning", false);
         characterAnimator.SetBool("isWalking", true);
+        characterAnimator.SetBool("isDefending", false);
+        characterAnimator.SetBool("isAttacking", false);
     }
 }
