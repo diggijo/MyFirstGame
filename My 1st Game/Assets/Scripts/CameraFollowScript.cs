@@ -5,18 +5,18 @@ using UnityEngine;
 public class CameraFollowScript : MonoBehaviour
 {
     public Transform mainCharacter;
-    public Vector3 cameraOffset;
+    public Vector3 cameraPosition;
 
     // Start is called before the first frame update
     void Start()
     {
-        cameraOffset = transform.position - mainCharacter.transform.position;
+        cameraPosition = transform.position - mainCharacter.transform.position;
     }
 
     // Update is called once per frame
-    void LateUpdate()
+    void Update()
     {
-        Vector3 newPosition = mainCharacter.transform.position + cameraOffset;
+        Vector3 newPosition = mainCharacter.transform.position + cameraPosition;
         transform.position = newPosition;
     }
 }
