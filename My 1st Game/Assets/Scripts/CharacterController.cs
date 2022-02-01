@@ -10,6 +10,8 @@ public class CharacterController : MonoBehaviour
     private float runSpeed = 6f;
     Animator characterAnimator;
     Rigidbody rb;
+    private bool characterOnFloor = true;
+    public int coins = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -61,16 +63,22 @@ public class CharacterController : MonoBehaviour
 
         transform.position += characterSpeed * moveDirection * Time.deltaTime;
 
-        if(Input.GetButtonDown("Jump"))
+        if(Input.GetButtonDown("Jump") && characterOnFloor)
         {
             Jump();
         }
-        
-    }
+}
 
     private void Jump()
     {
-        rb.AddForce(new Vector3(0, 5, 0), ForceMode.Impulse);
+        rb.AddForce(new Vector3(0, 5.5f, 0), ForceMode.Impulse);
+        characterOnFloor = false;
+        characterAnimator.SetBool("isJumping", true);
+
+        if(characterOnFloor)
+        {
+            characterAnimator.SetBool("isGrounded", true);
+        }
     }
 
     private void Defend()
@@ -89,6 +97,7 @@ public class CharacterController : MonoBehaviour
         characterAnimator.SetBool("isRunning", false);
         characterAnimator.SetBool("isDefending", false);
         characterAnimator.SetBool("isAttacking", false);
+        characterAnimator.SetBool("isJumping", false);
     }
 
     private void Run()
@@ -97,6 +106,7 @@ public class CharacterController : MonoBehaviour
         characterAnimator.SetBool("isRunning", true);
         characterAnimator.SetBool("isWalking", false);
         characterAnimator.SetBool("isDefending", false);
+        characterAnimator.SetBool("isJumping", false);
         characterAnimator.SetBool("isAttacking", false);
     }
 
@@ -107,5 +117,19 @@ public class CharacterController : MonoBehaviour
         characterAnimator.SetBool("isWalking", true);
         characterAnimator.SetBool("isDefending", false);
         characterAnimator.SetBool("isAttacking", false);
+        characterAnimator.SetBool("isJumping", false);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.tag == "Ground")
+        {
+            characterOnFloor = true;
+        }
+    }
+
+    private void OnGUI()
+    {
+        GUI.Label(new Rect(10, 10, 100, 20), "Coins: " + coins);
     }
 }
