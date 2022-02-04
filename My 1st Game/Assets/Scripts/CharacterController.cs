@@ -12,12 +12,14 @@ public class CharacterController : MonoBehaviour
     Rigidbody rb;
     private bool characterOnFloor = true;
     public int coins = 0;
+    private bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
 
     // Start is called before the first frame update
     void Start()
     {
         characterAnimator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody>();
+        Grounded = true;
     }
 
     // Update is called once per frame
@@ -72,13 +74,8 @@ public class CharacterController : MonoBehaviour
     private void Jump()
     {
         rb.AddForce(new Vector3(0, 5.5f, 0), ForceMode.Impulse);
-        characterOnFloor = false;
         characterAnimator.SetBool("isJumping", true);
-
-        if(characterOnFloor)
-        {
-            characterAnimator.SetBool("isGrounded", true);
-        }
+        Grounded = false;
     }
 
     private void Defend()
@@ -124,7 +121,7 @@ public class CharacterController : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ground")
         {
-            characterOnFloor = true;
+            Grounded = true;
         }
     }
 
