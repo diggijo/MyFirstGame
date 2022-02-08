@@ -36,7 +36,7 @@ public class CharacterController : MonoBehaviour
         Vector3 moveDirection = new Vector3(xDirection, 0, zDirection);
         if (moveDirection != Vector3.zero)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), 0.05f); //https://answers.unity.com/questions/803365/make-the-player-face-his-movement-direction.html
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), Time.deltaTime * 5f); //https://answers.unity.com/questions/803365/make-the-player-face-his-movement-direction.html
         }
 
         if (moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift))

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,7 +25,15 @@ public class EnemyController : MonoBehaviour
         if(distance <= attackRadius)
         {
             agent.SetDestination(target.position);
+            FaceTarget();
         }
+    }
+
+    private void FaceTarget()
+    {
+        Vector3 direction = (target.position - transform.position).normalized;
+        Quaternion lookDirection = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookDirection, Time.deltaTime * 5f);
     }
 
     private void OnDrawGizmosSelected()
