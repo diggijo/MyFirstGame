@@ -6,17 +6,23 @@ using UnityEngine;
 public class CharacterController : MonoBehaviour
 {
     private float characterSpeed;
-    private float walkSpeed = 3f;
-    private float runSpeed = 6f;
+    private float walkSpeed;
+    private float runSpeed;
     Animator characterAnimator;
     Rigidbody rb;
     private bool characterOnFloor = true;
-    public int coins = 0;
+    public int coins;
+    public float knockBackForce;
+    public float knockBackTime;
+    private float knockBackCounter;
+
     private bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
 
     // Start is called before the first frame update
     void Start()
     {
+        walkSpeed = 3f;
+        runSpeed = 6f;
         characterAnimator = GetComponentInChildren<Animator>();
         rb = GetComponent<Rigidbody>();
         Grounded = true;
@@ -25,7 +31,14 @@ public class CharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Move();
+        if(knockBackCounter <= 0)
+        {
+            Move();
+        }
+        else
+        {
+            knockBackCounter -= Time.deltaTime;
+        }
     }
 
     private void Move()
@@ -128,5 +141,12 @@ public class CharacterController : MonoBehaviour
     private void OnGUI()
     {
         GUI.Label(new Rect(10, 10, 100, 20), "Coins: " + coins);
+    }
+
+    public void KnockBack(Vector3 direction)
+    {
+        knockBackCounter = knockBackTime;
+
+        rb.AddForce(direction * knockBackForce * 100);
     }
 }
