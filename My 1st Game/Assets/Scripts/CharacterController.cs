@@ -18,7 +18,6 @@ public class CharacterController : MonoBehaviour
 
     private bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
 
-    // Start is called before the first frame update
     void Start()
     {
         walkSpeed = 3f;
@@ -28,7 +27,6 @@ public class CharacterController : MonoBehaviour
         Grounded = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if(knockBackCounter <= 0)
@@ -99,6 +97,7 @@ public class CharacterController : MonoBehaviour
     private void Attack()
     {
         characterAnimator.SetBool("isAttacking", true);
+
     }
 
     private void Idle()
@@ -108,6 +107,7 @@ public class CharacterController : MonoBehaviour
         characterAnimator.SetBool("isDefending", false);
         characterAnimator.SetBool("isAttacking", false);
         characterAnimator.SetBool("isJumping", false);
+        characterAnimator.SetBool("takingDamage", false);
     }
 
     private void Run()
@@ -118,6 +118,7 @@ public class CharacterController : MonoBehaviour
         characterAnimator.SetBool("isDefending", false);
         characterAnimator.SetBool("isJumping", false);
         characterAnimator.SetBool("isAttacking", false);
+        characterAnimator.SetBool("takingDamage", false);
     }
 
     private void Walk()
@@ -128,6 +129,17 @@ public class CharacterController : MonoBehaviour
         characterAnimator.SetBool("isDefending", false);
         characterAnimator.SetBool("isAttacking", false);
         characterAnimator.SetBool("isJumping", false);
+        characterAnimator.SetBool("takingDamage", false);
+    }
+
+    public void getHit()
+    {
+        characterAnimator.SetBool("takingDamage", true);
+    }
+
+    public void dead()
+    {
+        characterAnimator.Play("Die");
     }
 
     private void OnCollisionEnter(Collision collision)

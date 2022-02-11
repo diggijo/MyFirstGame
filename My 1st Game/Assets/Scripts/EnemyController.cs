@@ -10,19 +10,18 @@ public class EnemyController : MonoBehaviour
     float distance;
     Transform target;
     NavMeshAgent agent;
-    // Start is called before the first frame update
+
     void Start()
     {
         target = Manager.instance.player.transform;
         agent = GetComponent<NavMeshAgent>();
     }
 
-    // Update is called once per frame
     void Update()
     {
        distance = Vector3.Distance(target.position, transform.position);
 
-        if(distance <= attackRadius)
+        if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackRadius)
         {
             agent.SetDestination(target.position);
             FaceTarget();
