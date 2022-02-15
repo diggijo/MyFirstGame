@@ -18,7 +18,7 @@ public class CoinScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.name == "MainChar")
+        if(other.gameObject.tag == "Player")
         {
             other.GetComponent<CharacterController>().coins++;
             Destroy(gameObject);

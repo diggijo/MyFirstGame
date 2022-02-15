@@ -8,7 +8,7 @@ public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth;
     public int currentHealth;
-    public CharacterController player;
+    CharacterController player;
     public bool isGameOver;
     private float immuneTime;
     private float immune;
@@ -17,7 +17,7 @@ public class PlayerHealth : MonoBehaviour
     {
         immune = 1.2f;
         isGameOver = false;
-        maxHealth = 50;
+        maxHealth = 500;
         currentHealth = maxHealth;
         player = FindObjectOfType<CharacterController>();
     }
@@ -26,7 +26,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if(isGameOver)
         {
-            SceneManager.LoadScene("SampleScene");
+            //SceneManager.LoadScene("SampleScene");
         }
         if (immuneTime > 0)
         {
@@ -46,6 +46,7 @@ public class PlayerHealth : MonoBehaviour
             {
                 player.dead();
                 isGameOver = true;
+                immuneTime = immune;
             }
             else
             {

@@ -271,7 +271,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coins: 0
-  knockBackForce: 1.7
+  knockBackForce: 2
   knockBackTime: 0.4
 --- !u!4 &160248192
 Transform:
@@ -329,9 +329,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5368eaa5f53e1134dbcdd922e241c1f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 600
   currentHealth: 0
   player: {fileID: 0}
+  isGameOver: 0
 --- !u!65 &160248196
 BoxCollider:
   m_ObjectHideFlags: 0
