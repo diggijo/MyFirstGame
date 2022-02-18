@@ -5,11 +5,13 @@ using UnityEngine;
 public class Damage : MonoBehaviour
 {
     Rigidbody rb;
+    EnemyController owner;
 
     public int amtDamage = 50;
     void Start()
     {
         rb = GetComponentInParent<Rigidbody>();
+        owner = GetComponentInParent<EnemyController>();
     }
 
     void Update()
@@ -26,13 +28,6 @@ public class Damage : MonoBehaviour
             damageDirection = damageDirection.normalized;
 
             FindObjectOfType<PlayerHealth>().DamagePlayer(amtDamage, damageDirection);
-        }
-
-        if (other.gameObject.tag == "Sword")
-        {
-            //rb.transform.Rotate(0, 180 * Time.deltaTime, 0);
-            //Destroy(transform.parent.gameObject);
-            transform.Rotate(0, 180 * Time.deltaTime, 0);
         }
     }
 }
