@@ -124,8 +124,8 @@ public class CharacterController : MonoBehaviour
     private void Walk()
     {
         characterSpeed = walkSpeed;
-        characterAnimator.SetBool("isRunning", false);
         characterAnimator.SetBool("isWalking", true);
+        characterAnimator.SetBool("isRunning", false);
         characterAnimator.SetBool("isDefending", false);
         characterAnimator.SetBool("isAttacking", false);
         characterAnimator.SetBool("isJumping", false);

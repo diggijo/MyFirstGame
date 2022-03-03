@@ -26,7 +26,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if(isGameOver)
         {
-            //SceneManager.LoadScene("SampleScene");
+            StartCoroutine(resetGame());
         }
         if (immuneTime > 0)
         {
@@ -54,5 +54,11 @@ public class PlayerHealth : MonoBehaviour
             }
         }
         player.KnockBack(direction);
+    }
+
+    public IEnumerator resetGame()
+    {
+        yield return new WaitForSeconds(5f);
+        SceneManager.LoadScene("SampleScene");
     }
 }

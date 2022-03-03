@@ -8,23 +8,23 @@ public class EnemyController : MonoBehaviour
 {
     public float alertRadius = 5f;
     public float attackDistance = 1f;
-    CapsuleCollider collider;
     float distance;
     Transform target;
     NavMeshAgent agent;
-    enum enemyState { patrol, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
-    enemyState isCurrently = enemyState.patrol;
+    Collider collider;
+    internal enum enemyState { patrol, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
+    internal enemyState isCurrently = enemyState.patrol;
     private float flipTimer;
     public int amtDamage = 50;
 
-    void Start()
+    internal void Start()
     {
         target = Manager.instance.player.transform;
         agent = GetComponent<NavMeshAgent>();
         collider = GetComponent<CapsuleCollider>();
     }
 
-    void Update()
+    internal void Update()
     {
         switch (isCurrently)
         {
@@ -59,7 +59,7 @@ public class EnemyController : MonoBehaviour
 
                 if (!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
                 {
-                    //damagePlayer();
+                    //damagePlayer(requires collider parameter);
 
                     agent.SetDestination(target.position);
                     FaceTarget();
@@ -69,10 +69,16 @@ public class EnemyController : MonoBehaviour
 
             case enemyState.flippingOver:
 
-                transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(0, 540, flipTimer)));
+                transform.position = new Vector3(transform.position.x, 0.6f, transform.position.z);
+                transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(0, 180, flipTimer)));
                 flipTimer += Time.deltaTime;
+                //isCurrently = enemyState.upsideDown;
                 break;
-             
+
+            case enemyState.dying:
+
+                Destroy(gameObject);
+                break;
         }
     }
 
@@ -85,9 +91,12 @@ public class EnemyController : MonoBehaviour
 
     internal void swordHit()
     {
-        isCurrently = enemyState.flippingOver;
-        flipTimer = 0f;
-        print("sword hit");
+        if(isCurrently != enemyState.flippingOver && Input.GetMouseButton(0))
+        {
+            isCurrently = enemyState.flippingOver;
+            flipTimer = 0f;
+            print("sword hit");
+        }
     }
 
     private void OnDrawGizmosSelected()

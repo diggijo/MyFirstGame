@@ -7,6 +7,8 @@ TagManager:
   - Ground
   - Enemy
   - Sword
+  - Top
+  - Bottom
   layers:
   - Default
   - TransparentFX
