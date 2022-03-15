@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour
+public class CharacterController : MonoBehaviour, IDamagable
 {
     private float characterSpeed;
     private float walkSpeed;
@@ -155,10 +155,17 @@ public class CharacterController : MonoBehaviour
         GUI.Label(new Rect(10, 10, 100, 20), "Coins: " + coins);
     }
 
-    public void KnockBack(Vector3 direction)
+    public void KnockBack(Vector3 enemyPos)
     {
         knockBackCounter = knockBackTime;
 
-        rb.AddForce(direction * knockBackForce * 100);
+        Vector3 damageDirection = enemyPos - transform.position;
+        damageDirection = damageDirection.normalized;
+        rb.AddForce(damageDirection * knockBackForce * 100);
+    }
+
+    public void take_damage(int amtDamage)
+    {
+        FindObjectOfType<PlayerHealth>().DamagePlayer(amtDamage); 
     }
 }

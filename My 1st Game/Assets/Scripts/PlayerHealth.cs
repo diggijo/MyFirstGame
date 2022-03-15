@@ -34,7 +34,7 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    public void DamagePlayer(int amtDamage, Vector3 direction)
+    public void DamagePlayer(int amtDamage)
     {
         if (immuneTime <= 0)
         {
@@ -53,7 +53,6 @@ public class PlayerHealth : MonoBehaviour
                 immuneTime = immune;
             }
         }
-        player.KnockBack(direction);
     }
 
     public IEnumerator resetGame()

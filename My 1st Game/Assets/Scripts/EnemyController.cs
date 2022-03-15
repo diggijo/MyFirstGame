@@ -6,12 +6,13 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour
 {
-    public float alertRadius = 5f;
-    public float attackDistance = 1f;
+    public float alertRadius = 10f;
+    public float attackDistance = 5f;
     float distance;
     Transform target;
+    CharacterController targetScript;
     NavMeshAgent agent;
-    Collider collider;
+
     internal enum enemyState { patrol, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
     internal enemyState isCurrently = enemyState.patrol;
     private float flipTimer;
@@ -20,64 +21,80 @@ public class EnemyController : MonoBehaviour
     internal void Start()
     {
         target = Manager.instance.player.transform;
+        targetScript = target.GetComponent<CharacterController>();
         agent = GetComponent<NavMeshAgent>();
-        collider = GetComponent<CapsuleCollider>();
+        Collider collider = GetComponent<CapsuleCollider>();
     }
 
     internal void Update()
     {
+        distance = Vector3.Distance(target.position, transform.position);
+
         switch (isCurrently)
         {
             case enemyState.patrol:
-                
-                distance = Vector3.Distance(target.position, transform.position);
 
                 if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= alertRadius)
                 {
-                    agent.SetDestination(target.position);
-                    FaceTarget();
                     isCurrently = enemyState.moveToTarget;
                 }
+
                 break;
 
             case enemyState.moveToTarget:
 
-                if (!FindObjectOfType<PlayerHealth>().isGameOver && distance <= alertRadius)
+                agent.SetDestination(target.position);
+                FaceTarget();
+
+                if (!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
                 {
-                    agent.SetDestination(target.position);
-                    FaceTarget();
-                    isCurrently = enemyState.moveToTarget;
-                    if (distance <= attackDistance)
-                    {
-                        isCurrently = enemyState.attack;
-                    }
-                        
+                    isCurrently = enemyState.attack;
                 }
+                
+                if (distance > alertRadius)
+                {
+                    isCurrently = enemyState.patrol;
+                }
+
                 break;
 
             case enemyState.attack:
 
-                if (!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
+                if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
                 {
-                    //damagePlayer(requires collider parameter);
-
-                    agent.SetDestination(target.position);
-                    FaceTarget();
+                    if (targetScript is IDamagable)
+                    {
+                        targetScript.take_damage(50);
+                        targetScript.KnockBack(transform.position);
+                    }
+                }
+                if (distance > attackDistance)
+                {
                     isCurrently = enemyState.moveToTarget;
                 }
+                         
                 break;
 
             case enemyState.flippingOver:
-
                 transform.position = new Vector3(transform.position.x, 0.6f, transform.position.z);
                 transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(0, 180, flipTimer)));
                 flipTimer += Time.deltaTime;
                 //isCurrently = enemyState.upsideDown;
+
+                break;
+
+            case enemyState.upsideDown:
+
+                break;
+
+            case enemyState.flippingBack:
+
                 break;
 
             case enemyState.dying:
 
                 Destroy(gameObject);
+
                 break;
         }
     }
@@ -97,6 +114,11 @@ public class EnemyController : MonoBehaviour
             flipTimer = 0f;
             print("sword hit");
         }
+
+        if(isCurrently == enemyState.upsideDown && Input.GetMouseButton(0))
+        {
+            isCurrently = enemyState.dying;
+        }
     }
 
     private void OnDrawGizmosSelected()
@@ -110,22 +132,6 @@ public class EnemyController : MonoBehaviour
         if (other.gameObject.tag == "Sword")
         {
             swordHit();
-        }
-
-        if (other.gameObject.tag == "Player")
-        {
-            damagePlayer(other);
-        }
-    }
-
-    private void damagePlayer(Collider other)
-    {
-        if(isCurrently == enemyState.attack)
-        {
-            Vector3 damageDirection = other.transform.position - transform.position;
-            damageDirection = damageDirection.normalized;
-
-            FindObjectOfType<PlayerHealth>().DamagePlayer(amtDamage, damageDirection);
         }
     }
 }
