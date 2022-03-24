@@ -4,28 +4,113 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : MonoBehaviour, IDamagable
 {
-    public float attackRadius = 5f;
+    public float alertRadius = 10f;
+    public float attackDistance = 5f;
     float distance;
     Transform target;
+    CharacterController targetScript;
     NavMeshAgent agent;
-    // Start is called before the first frame update
-    void Start()
+
+    internal enum enemyState { patrol, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
+    internal enemyState isCurrently = enemyState.patrol;
+    internal float flipTimer = 0f;
+    public int amtDamage = 50;
+    private int currentHealth;
+    private int maxHealth;
+
+    internal void Start()
     {
         target = Manager.instance.player.transform;
+        targetScript = target.GetComponent<CharacterController>();
         agent = GetComponent<NavMeshAgent>();
+        Collider collider = GetComponent<CapsuleCollider>();
+        maxHealth = 50;
+        currentHealth = maxHealth;
     }
 
-    // Update is called once per frame
-    void Update()
+    internal void Update()
     {
-       distance = Vector3.Distance(target.position, transform.position);
+        Vector3 toTarget = (transform.position - target.position).normalized;
+        distance = Vector3.Distance(target.position, transform.position);
 
-        if(distance <= attackRadius)
+        switch (isCurrently)
         {
-            agent.SetDestination(target.position);
-            FaceTarget();
+            case enemyState.patrol:
+
+                if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= alertRadius)
+                {
+                    isCurrently = enemyState.moveToTarget;
+                }
+
+                break;
+
+            case enemyState.moveToTarget:
+
+                agent.SetDestination(target.position);
+                FaceTarget();
+
+                if (!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
+                {
+                    isCurrently = enemyState.attack;
+                }
+                
+                if (distance > alertRadius)
+                {
+                    isCurrently = enemyState.patrol;
+                }
+
+                break;
+
+            case enemyState.attack:
+
+                if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
+                {
+                    if (targetScript is IDamagable && !targetScript.defending)
+                    {
+                        targetScript.take_damage(50);
+                        targetScript.KnockBack(transform.position);     
+                    }
+
+                    if(targetScript.defending && Vector3.Dot(toTarget, transform.forward) < 0)
+                    {
+                        targetScript.take_damage(50);
+                        targetScript.KnockBack(transform.position);
+                    }
+                }
+                if (distance > attackDistance)
+                {
+                    isCurrently = enemyState.moveToTarget;
+                }
+                         
+                break;
+
+            case enemyState.flippingOver:
+                transform.position = new Vector3(transform.position.x, 0.6f, transform.position.z);
+                transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(0, 180, flipTimer)));
+                flipTimer += Time.deltaTime;
+
+                if(flipTimer >= 2f)
+                {
+                    isCurrently = enemyState.upsideDown;
+                }
+                
+                break;
+
+            case enemyState.upsideDown:
+
+                break;
+
+            case enemyState.flippingBack:
+
+                break;
+
+            case enemyState.dying:
+
+                Destroy(gameObject);
+
+                break;
         }
     }
 
@@ -36,9 +121,24 @@ public class EnemyController : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, lookDirection, Time.deltaTime * 5f);
     }
 
+    internal void swordHit()
+    {
+        print("Sword Hit");
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackRadius);
+        Gizmos.DrawWireSphere(transform.position, attackDistance);
+    }
+
+    public void take_damage(int amtDamage)
+    {
+        currentHealth =  maxHealth - amtDamage;
+
+        if(currentHealth <= 0 )
+        {
+            isCurrently = enemyState.dying;
+        }
     }
 }

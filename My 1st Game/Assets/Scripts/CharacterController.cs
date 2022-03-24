@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour
+public class CharacterController : MonoBehaviour, IDamagable
 {
     private float characterSpeed;
     private float walkSpeed;
@@ -15,10 +15,10 @@ public class CharacterController : MonoBehaviour
     public float knockBackForce;
     public float knockBackTime;
     private float knockBackCounter;
+    internal bool defending;
 
-    private bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
+    internal bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
 
-    // Start is called before the first frame update
     void Start()
     {
         walkSpeed = 3f;
@@ -28,7 +28,6 @@ public class CharacterController : MonoBehaviour
         Grounded = true;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if(knockBackCounter <= 0)
@@ -71,10 +70,12 @@ public class CharacterController : MonoBehaviour
             Attack();
         }
 
-        if(Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1))
         {
             Defend();
         }
+        else
+            defending = false;
 
         transform.position += characterSpeed * moveDirection * Time.deltaTime;
 
@@ -94,11 +95,13 @@ public class CharacterController : MonoBehaviour
     private void Defend()
     {
         characterAnimator.SetBool("isDefending", true);
+        defending = true;
     }
 
     private void Attack()
     {
         characterAnimator.SetBool("isAttacking", true);
+
     }
 
     private void Idle()
@@ -108,6 +111,7 @@ public class CharacterController : MonoBehaviour
         characterAnimator.SetBool("isDefending", false);
         characterAnimator.SetBool("isAttacking", false);
         characterAnimator.SetBool("isJumping", false);
+        characterAnimator.SetBool("takingDamage", false);
     }
 
     private void Run()
@@ -118,16 +122,28 @@ public class CharacterController : MonoBehaviour
         characterAnimator.SetBool("isDefending", false);
         characterAnimator.SetBool("isJumping", false);
         characterAnimator.SetBool("isAttacking", false);
+        characterAnimator.SetBool("takingDamage", false);
     }
 
     private void Walk()
     {
         characterSpeed = walkSpeed;
-        characterAnimator.SetBool("isRunning", false);
         characterAnimator.SetBool("isWalking", true);
+        characterAnimator.SetBool("isRunning", false);
         characterAnimator.SetBool("isDefending", false);
         characterAnimator.SetBool("isAttacking", false);
         characterAnimator.SetBool("isJumping", false);
+        characterAnimator.SetBool("takingDamage", false);
+    }
+
+    public void getHit()
+    {
+        characterAnimator.SetBool("takingDamage", true);
+    }
+
+    public void dead()
+    {
+        characterAnimator.Play("Die");
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -143,10 +159,17 @@ public class CharacterController : MonoBehaviour
         GUI.Label(new Rect(10, 10, 100, 20), "Coins: " + coins);
     }
 
-    public void KnockBack(Vector3 direction)
+    public void KnockBack(Vector3 enemyPos)
     {
         knockBackCounter = knockBackTime;
 
-        rb.AddForce(direction * knockBackForce * 100);
+        Vector3 damageDirection = enemyPos - transform.position;
+        damageDirection = damageDirection.normalized;
+        rb.AddForce(damageDirection * knockBackForce * 100);
+    }
+
+    public void take_damage(int amtDamage)
+    {
+        FindObjectOfType<PlayerHealth>().DamagePlayer(amtDamage); 
     }
 }

@@ -4,13 +4,11 @@ using UnityEngine;
 
 public class CoinScript : MonoBehaviour
 {
-    // Start is called before the first frame update
     void Start()
     {
         
     }
 
-    // Update is called once per frame
     void Update()
     {
         transform.Rotate(0, 0, -90 * Time.deltaTime);
@@ -18,7 +16,7 @@ public class CoinScript : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.name == "MainChar")
+        if(other.gameObject.tag == "Player")
         {
             other.GetComponent<CharacterController>().coins++;
             Destroy(gameObject);
