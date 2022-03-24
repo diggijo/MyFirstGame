@@ -15,8 +15,9 @@ public class CharacterController : MonoBehaviour, IDamagable
     public float knockBackForce;
     public float knockBackTime;
     private float knockBackCounter;
+    internal bool defending;
 
-    private bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
+    internal bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
 
     void Start()
     {
@@ -69,10 +70,12 @@ public class CharacterController : MonoBehaviour, IDamagable
             Attack();
         }
 
-        if(Input.GetMouseButton(1))
+        if (Input.GetMouseButton(1))
         {
             Defend();
         }
+        else
+            defending = false;
 
         transform.position += characterSpeed * moveDirection * Time.deltaTime;
 
@@ -92,6 +95,7 @@ public class CharacterController : MonoBehaviour, IDamagable
     private void Defend()
     {
         characterAnimator.SetBool("isDefending", true);
+        defending = true;
     }
 
     private void Attack()

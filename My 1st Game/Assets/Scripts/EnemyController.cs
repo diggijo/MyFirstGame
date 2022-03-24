@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController : MonoBehaviour, IDamagable
 {
     public float alertRadius = 10f;
     public float attackDistance = 5f;
@@ -15,8 +15,10 @@ public class EnemyController : MonoBehaviour
 
     internal enum enemyState { patrol, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
     internal enemyState isCurrently = enemyState.patrol;
-    private float flipTimer;
+    internal float flipTimer = 0f;
     public int amtDamage = 50;
+    private int currentHealth;
+    private int maxHealth;
 
     internal void Start()
     {
@@ -24,10 +26,13 @@ public class EnemyController : MonoBehaviour
         targetScript = target.GetComponent<CharacterController>();
         agent = GetComponent<NavMeshAgent>();
         Collider collider = GetComponent<CapsuleCollider>();
+        maxHealth = 50;
+        currentHealth = maxHealth;
     }
 
     internal void Update()
     {
+        Vector3 toTarget = (transform.position - target.position).normalized;
         distance = Vector3.Distance(target.position, transform.position);
 
         switch (isCurrently)
@@ -62,7 +67,13 @@ public class EnemyController : MonoBehaviour
 
                 if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
                 {
-                    if (targetScript is IDamagable)
+                    if (targetScript is IDamagable && !targetScript.defending)
+                    {
+                        targetScript.take_damage(50);
+                        targetScript.KnockBack(transform.position);     
+                    }
+
+                    if(targetScript.defending && Vector3.Dot(toTarget, transform.forward) < 0)
                     {
                         targetScript.take_damage(50);
                         targetScript.KnockBack(transform.position);
@@ -79,8 +90,12 @@ public class EnemyController : MonoBehaviour
                 transform.position = new Vector3(transform.position.x, 0.6f, transform.position.z);
                 transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(0, 180, flipTimer)));
                 flipTimer += Time.deltaTime;
-                //isCurrently = enemyState.upsideDown;
 
+                if(flipTimer >= 2f)
+                {
+                    isCurrently = enemyState.upsideDown;
+                }
+                
                 break;
 
             case enemyState.upsideDown:
@@ -108,17 +123,7 @@ public class EnemyController : MonoBehaviour
 
     internal void swordHit()
     {
-        if(isCurrently != enemyState.flippingOver && Input.GetMouseButton(0))
-        {
-            isCurrently = enemyState.flippingOver;
-            flipTimer = 0f;
-            print("sword hit");
-        }
-
-        if(isCurrently == enemyState.upsideDown && Input.GetMouseButton(0))
-        {
-            isCurrently = enemyState.dying;
-        }
+        print("Sword Hit");
     }
 
     private void OnDrawGizmosSelected()
@@ -127,11 +132,13 @@ public class EnemyController : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, attackDistance);
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void take_damage(int amtDamage)
     {
-        if (other.gameObject.tag == "Sword")
+        currentHealth =  maxHealth - amtDamage;
+
+        if(currentHealth <= 0 )
         {
-            swordHit();
+            isCurrently = enemyState.dying;
         }
     }
 }
