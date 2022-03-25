@@ -18,7 +18,7 @@ public class CoinScript : MonoBehaviour
     {
         if(other.gameObject.tag == "Player")
         {
-            other.GetComponent<CharacterController>().coins++;
+            other.GetComponent<PlayerController>().coins++;
             Destroy(gameObject);
         }
     }
