@@ -8,7 +8,7 @@ public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth;
     public int currentHealth;
-    CharacterController player;
+    PlayerController player;
     public bool isGameOver;
     private float immuneTime;
     private float immune;
@@ -19,7 +19,7 @@ public class PlayerHealth : MonoBehaviour
         isGameOver = false;
         maxHealth = 500;
         currentHealth = maxHealth;
-        player = FindObjectOfType<CharacterController>();
+        player = FindObjectOfType<PlayerController>();
     }
 
     void Update()

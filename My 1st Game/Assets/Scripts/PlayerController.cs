@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterController : MonoBehaviour, IDamagable
+public class PlayerController : MonoBehaviour, IDamagable
 {
     private float characterSpeed;
     private float walkSpeed;
@@ -16,8 +16,11 @@ public class CharacterController : MonoBehaviour, IDamagable
     public float knockBackTime;
     private float knockBackCounter;
     internal bool defending;
+    private bool attacking;
+    private float swordAttack;
 
     internal bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
+    internal bool Attacking { get => attacking; set => attacking = value; }
 
     void Start()
     {
@@ -29,7 +32,7 @@ public class CharacterController : MonoBehaviour, IDamagable
     }
 
     void Update()
-    {
+    {   
         if(knockBackCounter <= 0)
         {
             Move();
@@ -37,6 +40,13 @@ public class CharacterController : MonoBehaviour, IDamagable
         else
         {
             knockBackCounter -= Time.deltaTime;
+        }
+
+        swordAttack += Time.deltaTime;
+
+        if (swordAttack > 0.5f)
+        {
+            attacking = false;
         }
     }
 
@@ -65,7 +75,7 @@ public class CharacterController : MonoBehaviour, IDamagable
             Idle();
         }
 
-        if(Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0))
         {
             Attack();
         }
@@ -100,8 +110,9 @@ public class CharacterController : MonoBehaviour, IDamagable
 
     private void Attack()
     {
+        swordAttack = 0f;
         characterAnimator.SetBool("isAttacking", true);
-
+        attacking = true;
     }
 
     private void Idle()
@@ -162,7 +173,6 @@ public class CharacterController : MonoBehaviour, IDamagable
     public void KnockBack(Vector3 enemyPos)
     {
         knockBackCounter = knockBackTime;
-
         Vector3 damageDirection = enemyPos - transform.position;
         damageDirection = damageDirection.normalized;
         rb.AddForce(damageDirection * knockBackForce * 100);

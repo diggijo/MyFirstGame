@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class ShellEnemy : EnemyController
 {
-    CharacterController player;
+    PlayerController player;
     new void Start()
     {
         base.Start();
-        player = FindObjectOfType<CharacterController>();
+        player = FindObjectOfType<PlayerController>();
     }
 
     new void Update()
@@ -18,7 +18,7 @@ public class ShellEnemy : EnemyController
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Sword" && Input.GetMouseButton(0))
+        if (other.gameObject.tag == "Sword" && player.Attacking)
         {
             swordHit();
         }
@@ -26,17 +26,17 @@ public class ShellEnemy : EnemyController
         if (isCurrently == enemyState.upsideDown && other.gameObject.tag == "Player" && !player.Grounded)
         {
             take_damage(50);
-        }    
+        }
     }
 
     internal new void swordHit()
     {
-        if (isCurrently != enemyState.flippingOver && Input.GetMouseButton(0))
+        if (isCurrently != enemyState.flippingOver)
         {
             isCurrently = enemyState.flippingOver;
         }
 
-        if (isCurrently == enemyState.upsideDown && Input.GetMouseButton(0))
+        if (isCurrently == enemyState.upsideDown)
         {
             take_damage(50);
         }

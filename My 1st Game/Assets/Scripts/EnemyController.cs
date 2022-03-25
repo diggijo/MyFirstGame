@@ -10,20 +10,22 @@ public class EnemyController : MonoBehaviour, IDamagable
     public float attackDistance = 5f;
     float distance;
     Transform target;
-    CharacterController targetScript;
+    PlayerController targetScript;
     NavMeshAgent agent;
 
     internal enum enemyState { patrol, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
     internal enemyState isCurrently = enemyState.patrol;
     internal float flipTimer = 0f;
+    private float attackTimer = 0f;
+    private float attack_Cooldown = 1.2f;
     public int amtDamage = 50;
     private int currentHealth;
-    private int maxHealth;
+    private int maxHealth;  
 
     internal void Start()
     {
         target = Manager.instance.player.transform;
-        targetScript = target.GetComponent<CharacterController>();
+        targetScript = target.GetComponent<PlayerController>();
         agent = GetComponent<NavMeshAgent>();
         Collider collider = GetComponent<CapsuleCollider>();
         maxHealth = 50;
@@ -32,6 +34,7 @@ public class EnemyController : MonoBehaviour, IDamagable
 
     internal void Update()
     {
+        attackTimer -= Time.deltaTime;
         Vector3 toTarget = (transform.position - target.position).normalized;
         distance = Vector3.Distance(target.position, transform.position);
 
@@ -47,7 +50,7 @@ public class EnemyController : MonoBehaviour, IDamagable
                 break;
 
             case enemyState.moveToTarget:
-
+                agent.enabled = true;
                 agent.SetDestination(target.position);
                 FaceTarget();
 
@@ -67,18 +70,24 @@ public class EnemyController : MonoBehaviour, IDamagable
 
                 if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
                 {
-                    if (targetScript is IDamagable && !targetScript.defending)
+                    if(attackTimer<=0)
                     {
-                        targetScript.take_damage(50);
-                        targetScript.KnockBack(transform.position);     
-                    }
+                        attackTimer = attack_Cooldown;
 
-                    if(targetScript.defending && Vector3.Dot(toTarget, transform.forward) < 0)
-                    {
-                        targetScript.take_damage(50);
-                        targetScript.KnockBack(transform.position);
-                    }
+                        if (targetScript is IDamagable && !targetScript.defending)
+                        {
+                            targetScript.take_damage(50);
+                            targetScript.KnockBack(transform.position);     
+                        }
+
+                        if(targetScript.defending && Vector3.Dot(toTarget, transform.forward) < 0)
+                        {
+                            targetScript.take_damage(50);
+                            targetScript.KnockBack(transform.position);
+                        }
+                    }                 
                 }
+
                 if (distance > attackDistance)
                 {
                     isCurrently = enemyState.moveToTarget;
@@ -87,14 +96,16 @@ public class EnemyController : MonoBehaviour, IDamagable
                 break;
 
             case enemyState.flippingOver:
+
+                agent.enabled = false;
                 transform.position = new Vector3(transform.position.x, 0.6f, transform.position.z);
-                transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(0, 180, flipTimer)));
+                transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(0, 179, flipTimer)));
                 flipTimer += Time.deltaTime;
 
-                if(flipTimer >= 2f)
+                if (flipTimer>2)
                 {
                     isCurrently = enemyState.upsideDown;
-                }
+                }   
                 
                 break;
 
