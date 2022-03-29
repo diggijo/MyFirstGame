@@ -12,21 +12,30 @@ public class EnemyController : MonoBehaviour, IDamagable
     Transform target;
     PlayerController targetScript;
     NavMeshAgent agent;
+    Animator enemyAnimator;
 
     internal enum enemyState { patrol, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
     internal enemyState isCurrently = enemyState.patrol;
+    private const float flipHeight = 0.6f;
     internal float flipTimer = 0f;
+    private const float flipTimerMax = 1.1f;
+    private float flipCooldown;
+    private const float flipCooldownTimer = 4f;
+    private float yPos;
+    private const float moveYPos = 0.45f;
     private float attackTimer = 0f;
-    private float attack_Cooldown = 1.2f;
-    public int amtDamage = 50;
+    private const float attack_Cooldown = 1.2f;
+    public const int amtDamage = 50;
     private int currentHealth;
-    private int maxHealth;  
+    private int maxHealth;
+    private const float faceTargetSpeed = 5f;
 
     internal void Start()
     {
         target = Manager.instance.player.transform;
         targetScript = target.GetComponent<PlayerController>();
         agent = GetComponent<NavMeshAgent>();
+        enemyAnimator = GetComponentInChildren<Animator>();
         Collider collider = GetComponent<CapsuleCollider>();
         maxHealth = 50;
         currentHealth = maxHealth;
@@ -38,6 +47,17 @@ public class EnemyController : MonoBehaviour, IDamagable
         Vector3 toTarget = (transform.position - target.position).normalized;
         distance = Vector3.Distance(target.position, transform.position);
 
+        if (isCurrently != enemyState.attack)
+        {
+            enemyAnimator.SetBool("isAttacking", false);
+        }
+
+        if (FindObjectOfType<PlayerHealth>().isGameOver)
+        {
+            enemyAnimator.Play("Victory");
+            agent.enabled = false;
+        }
+            
         switch (isCurrently)
         {
             case enemyState.patrol:
@@ -50,6 +70,7 @@ public class EnemyController : MonoBehaviour, IDamagable
                 break;
 
             case enemyState.moveToTarget:
+
                 agent.enabled = true;
                 agent.SetDestination(target.position);
                 FaceTarget();
@@ -70,22 +91,23 @@ public class EnemyController : MonoBehaviour, IDamagable
 
                 if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
                 {
-                    if(attackTimer<=0)
+                    if (attackTimer<=0)
                     {
                         attackTimer = attack_Cooldown;
+                        enemyAnimator.SetBool("isAttacking", true);
 
-                        if (targetScript is IDamagable && !targetScript.defending)
+                        if (targetScript is IDamagable && !targetScript.defending && targetScript.Grounded)
                         {
-                            targetScript.take_damage(50);
+                            targetScript.take_damage(amtDamage);
                             targetScript.KnockBack(transform.position);     
                         }
 
                         if(targetScript.defending && Vector3.Dot(toTarget, transform.forward) < 0)
                         {
-                            targetScript.take_damage(50);
+                            targetScript.take_damage(amtDamage);
                             targetScript.KnockBack(transform.position);
                         }
-                    }                 
+                    }
                 }
 
                 if (distance > attackDistance)
@@ -98,22 +120,62 @@ public class EnemyController : MonoBehaviour, IDamagable
             case enemyState.flippingOver:
 
                 agent.enabled = false;
-                transform.position = new Vector3(transform.position.x, 0.6f, transform.position.z);
-                transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(0, 179, flipTimer)));
+
+                if(yPos >= flipHeight)
+                {
+                    yPos = flipHeight;
+                }
+
+                transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(0, 180, flipTimer)));
                 flipTimer += Time.deltaTime;
 
-                if (flipTimer>2)
+                if(flipTimer >= moveYPos)
+                {
+                    yPos += Time.deltaTime;
+                    transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
+                }
+
+                if (flipTimer >= flipTimerMax)
                 {
                     isCurrently = enemyState.upsideDown;
+                    flipTimer = 0;
+                    flipCooldown = 0;
                 }   
                 
                 break;
 
             case enemyState.upsideDown:
 
+                flipCooldown += Time.deltaTime;
+
+                if (flipCooldown >= flipCooldownTimer)
+                {
+                    isCurrently = enemyState.flippingBack;
+                }
+                   
                 break;
 
             case enemyState.flippingBack:
+
+                if (yPos <= 0)
+                {
+                    yPos = 0;
+                }
+
+                transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(180, 0, flipTimer)));
+                flipTimer += Time.deltaTime;
+
+                if (flipTimer >= moveYPos)
+                {
+                    yPos -=Time.deltaTime;
+                    transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
+                }
+
+                if (flipTimer >= flipTimerMax)
+                {
+                    isCurrently = enemyState.patrol;
+                    flipTimer = 0;
+                }
 
                 break;
 
@@ -129,12 +191,11 @@ public class EnemyController : MonoBehaviour, IDamagable
     {
         Vector3 direction = (target.position - transform.position).normalized;
         Quaternion lookDirection = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookDirection, Time.deltaTime * 5f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, lookDirection, Time.deltaTime * faceTargetSpeed);
     }
 
     internal void swordHit()
     {
-        print("Sword Hit");
     }
 
     private void OnDrawGizmosSelected()

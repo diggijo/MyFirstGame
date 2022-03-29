@@ -25,20 +25,20 @@ public class ShellEnemy : EnemyController
 
         if (isCurrently == enemyState.upsideDown && other.gameObject.tag == "Player" && !player.Grounded)
         {
-            take_damage(50);
+            take_damage(amtDamage);
         }
     }
 
     internal new void swordHit()
     {
-        if (isCurrently != enemyState.flippingOver)
+        if (isCurrently != enemyState.flippingOver && isCurrently != enemyState.upsideDown)
         {
             isCurrently = enemyState.flippingOver;
         }
 
         if (isCurrently == enemyState.upsideDown)
         {
-            take_damage(50);
+            take_damage(amtDamage);
         }
     }
 }
