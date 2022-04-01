@@ -27,6 +27,11 @@ public class ShellEnemy : EnemyController
         {
             take_damage(amtDamage);
         }
+
+        if(isCurrently != enemyState.flippingOver && isCurrently != enemyState.upsideDown && isCurrently != enemyState.flippingBack && other.gameObject.tag == "Player")
+        {
+            player.take_damage(amtDamage);
+        }
     }
 
     internal new void swordHit()
@@ -38,6 +43,7 @@ public class ShellEnemy : EnemyController
 
         if (isCurrently == enemyState.upsideDown)
         {
+            print("sword hit");
             take_damage(amtDamage);
         }
     }

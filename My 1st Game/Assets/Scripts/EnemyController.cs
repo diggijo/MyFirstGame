@@ -44,7 +44,6 @@ public class EnemyController : MonoBehaviour, IDamagable
     internal void Update()
     {
         attackTimer -= Time.deltaTime;
-        Vector3 toTarget = (transform.position - target.position).normalized;
         distance = Vector3.Distance(target.position, transform.position);
 
         if (isCurrently != enemyState.attack)
@@ -96,16 +95,10 @@ public class EnemyController : MonoBehaviour, IDamagable
                         attackTimer = attack_Cooldown;
                         enemyAnimator.SetBool("isAttacking", true);
 
-                        if (targetScript is IDamagable && !targetScript.defending && targetScript.Grounded)
+                        if (targetScript is IDamagable && (!targetScript.defending && targetScript.Grounded) || (targetScript.defending && playerNotFacing(target)))
                         {
                             targetScript.take_damage(amtDamage);
                             targetScript.KnockBack(transform.position);     
-                        }
-
-                        if(targetScript.defending && Vector3.Dot(toTarget, transform.forward) < 0)
-                        {
-                            targetScript.take_damage(amtDamage);
-                            targetScript.KnockBack(transform.position);
                         }
                     }
                 }
@@ -212,5 +205,11 @@ public class EnemyController : MonoBehaviour, IDamagable
         {
             isCurrently = enemyState.dying;
         }
+    }
+
+    public bool playerNotFacing(Transform target)
+    {
+        Vector3 toTarget = (transform.position - target.position).normalized;
+        return (Vector3.Dot(toTarget, target.forward) < 0);
     }
 }

@@ -163,7 +163,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 83504534}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5000001
   m_Height: 2
@@ -271,8 +271,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   coins: 0
-  knockBackForce: 2
-  knockBackTime: 0.4
+  knockBackForce: 0
+  knockBackTime: 0
 --- !u!4 &160248192
 Transform:
   m_ObjectHideFlags: 0
@@ -454,7 +454,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 309391986}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5000001
   m_Height: 2
@@ -1085,7 +1085,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1112583370}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5000001
   m_Height: 2
@@ -1256,7 +1256,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   alertRadius: 5
   attackDistance: 1
-  amtDamage: 50
 --- !u!136 &1125440986
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1368,7 +1367,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   alertRadius: 5
   attackDistance: 1
-  amtDamage: 50
 --- !u!54 &1338481156
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1612,7 +1610,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2063172325}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5000001
   m_Height: 2
@@ -1721,7 +1719,7 @@ CapsuleCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2098896640}
   m_Material: {fileID: 0}
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5000001
   m_Height: 2

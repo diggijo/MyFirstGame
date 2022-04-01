@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class CoinScript : MonoBehaviour
 {
+    PlayerController player;
     void Start()
     {
-        
+        player = FindObjectOfType<PlayerController>();
     }
 
     void Update()
@@ -18,7 +19,7 @@ public class CoinScript : MonoBehaviour
     {
         if(other.gameObject.tag == "Player")
         {
-            other.GetComponent<PlayerController>().coins++;
+            player.coins++;
             Destroy(gameObject);
         }
     }
