@@ -57,7 +57,7 @@ public class PlayerHealth : MonoBehaviour
 
     public IEnumerator resetGame()
     {
-        yield return new WaitForSeconds(5f);
-        SceneManager.LoadScene("SampleScene");
+        yield return new WaitForSeconds(50f);
+        SceneManager.LoadScene("MainGame");
     }
 }
