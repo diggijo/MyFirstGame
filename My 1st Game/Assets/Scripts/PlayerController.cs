@@ -48,6 +48,11 @@ public class PlayerController : MonoBehaviour, IDamagable
         {
             attacking = false;
         }
+
+        if(coins >= 25)
+        {
+
+        }
     }
 
     private void Move()

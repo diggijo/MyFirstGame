@@ -38,7 +38,6 @@ public class PlayerHealth : MonoBehaviour
     {
         if (immuneTime <= 0)
         {
-
             currentHealth -= amtDamage;
             player.getHit();
 
@@ -57,7 +56,7 @@ public class PlayerHealth : MonoBehaviour
 
     public IEnumerator resetGame()
     {
-        yield return new WaitForSeconds(50f);
+        yield return new WaitForSeconds(10f);
         SceneManager.LoadScene("MainGame");
     }
 }

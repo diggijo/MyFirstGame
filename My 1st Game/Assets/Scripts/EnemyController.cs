@@ -183,12 +183,16 @@ public class EnemyController : MonoBehaviour, IDamagable
     private void FaceTarget()
     {
         Vector3 direction = (target.position - transform.position).normalized;
-        Quaternion lookDirection = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookDirection, Time.deltaTime * faceTargetSpeed);
+        if(direction != Vector3.zero)
+        {
+            Quaternion lookDirection = Quaternion.LookRotation(new Vector3(direction.x, 0, direction.z));
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookDirection, Time.deltaTime * faceTargetSpeed);  
+        }
     }
 
     internal void swordHit()
     {
+        take_damage(50);
     }
 
     private void OnDrawGizmosSelected()
@@ -199,9 +203,9 @@ public class EnemyController : MonoBehaviour, IDamagable
 
     public void take_damage(int amtDamage)
     {
-        currentHealth =  maxHealth - amtDamage;
+        currentHealth = maxHealth - amtDamage;
 
-        if(currentHealth <= 0 )
+        if(currentHealth <= 0)
         {
             isCurrently = enemyState.dying;
         }
