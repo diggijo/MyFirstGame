@@ -32,13 +32,18 @@ public class PlayerHealth : MonoBehaviour
         {
             immuneTime -= Time.deltaTime;
         }
+
+        if(player.fellDownHole)
+        {
+            isGameOver = true;
+        }
+
     }
 
     public void DamagePlayer(int amtDamage)
     {
         if (immuneTime <= 0)
         {
-
             currentHealth -= amtDamage;
             player.getHit();
 
@@ -57,7 +62,7 @@ public class PlayerHealth : MonoBehaviour
 
     public IEnumerator resetGame()
     {
-        yield return new WaitForSeconds(50f);
+        yield return new WaitForSeconds(5f);
         SceneManager.LoadScene("MainGame");
     }
 }

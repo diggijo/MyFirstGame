@@ -30,9 +30,4 @@ public class SlimeEnemy : EnemyController
                 take_damage(50);  
         }
     }
-
-    internal new void swordHit()
-    {
-        take_damage(50);
-    }
 }
