@@ -6,8 +6,8 @@ using UnityEngine.AI;
 
 public class EnemyController : MonoBehaviour, IDamagable
 {
-    public float alertRadius = 10f;
-    public float attackDistance = 5f;
+    public float alertRadius = 5f;
+    public float attackDistance = 1f;
     float distance;
     Transform target;
     PlayerController targetScript;

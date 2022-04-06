@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     internal bool defending;
     private bool attacking;
     private float swordAttack;
+    internal bool fellDownHole = false;
+    PlayerHealth ph;
 
     internal bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
     internal bool Attacking { get => attacking; set => attacking = value; }
@@ -27,13 +29,14 @@ public class PlayerController : MonoBehaviour, IDamagable
         walkSpeed = 3f;
         runSpeed = 6f;
         characterAnimator = GetComponentInChildren<Animator>();
+        ph = FindObjectOfType<PlayerHealth>();
         rb = GetComponent<Rigidbody>();
         Grounded = true;
     }
 
     void Update()
     {   
-        if(knockBackCounter <= 0)
+        if(knockBackCounter <= 0 && !ph.isGameOver)
         {
             Move();
         }
@@ -185,6 +188,15 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     public void take_damage(int amtDamage)
     {
-        FindObjectOfType<PlayerHealth>().DamagePlayer(amtDamage); 
+        ph.DamagePlayer(amtDamage); 
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "FallToDeath")
+        {
+            fellDownHole = true;
+            dead();
+        }    
     }
 }

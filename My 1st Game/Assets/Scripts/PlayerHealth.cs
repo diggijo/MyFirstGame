@@ -32,6 +32,12 @@ public class PlayerHealth : MonoBehaviour
         {
             immuneTime -= Time.deltaTime;
         }
+
+        if(player.fellDownHole)
+        {
+            isGameOver = true;
+        }
+
     }
 
     public void DamagePlayer(int amtDamage)
@@ -56,7 +62,7 @@ public class PlayerHealth : MonoBehaviour
 
     public IEnumerator resetGame()
     {
-        yield return new WaitForSeconds(10f);
+        yield return new WaitForSeconds(5f);
         SceneManager.LoadScene("MainGame");
     }
 }
