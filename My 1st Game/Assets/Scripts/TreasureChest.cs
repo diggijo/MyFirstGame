@@ -67,6 +67,14 @@ public class TreasureChest : MonoBehaviour
         }
     }
 
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.tag == "Player")
+        {
+            isPlayerClose = true;
+        }
+    }
+
     private void OnTriggerExit(Collider other)
     {
         isPlayerClose = false;
