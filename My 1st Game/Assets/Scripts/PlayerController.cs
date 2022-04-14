@@ -21,6 +21,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     internal bool fellDownHole = false;
     PlayerHealth ph;
     private const float jumpHeight = 5.5f;
+    private const int amtDamage = 50;
 
     internal bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
     internal bool Attacking { get; set; }
@@ -34,8 +35,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     }
 
     void Update()
-    {   
-        if(knockBackCounter <= 0 && !ph.isGameOver)
+    {
+        if (knockBackCounter <= 0 && !ph.isGameOver)
         {
             Move();
         }
@@ -51,7 +52,7 @@ public class PlayerController : MonoBehaviour, IDamagable
             Attacking = false;
         }
 
-        if(coins >= 25)
+        if (coins >= 25)
         {
 
         }
@@ -72,7 +73,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         {
             Walk();
         }
-        else if (moveDirection != Vector3.zero && Input.GetKey(KeyCode.LeftShift) && characterOnFloor)
+        else if (moveDirection != Vector3.zero && Input.GetKey(KeyCode.LeftShift) && characterOnFloor && !defending)
         {
             Run();
         }
@@ -92,7 +93,10 @@ public class PlayerController : MonoBehaviour, IDamagable
             Defend();
         }
         else
+        {
             defending = false;
+        }
+            
 
         transform.position += characterSpeed * moveDirection * Time.deltaTime;
 
@@ -154,11 +158,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         characterAnimator.SetBool("takingDamage", false);
     }
 
-    public void getHit()
-    {
-        characterAnimator.SetBool("takingDamage", true);
-    }
-
     public void dead()
     {
         characterAnimator.Play("Die");
@@ -188,6 +187,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     public void take_damage(int amtDamage)
     {
         ph.DamagePlayer(amtDamage);
+        characterAnimator.Play("GetHit");
     }
 
     public void OnTriggerEnter(Collider other)
@@ -196,6 +196,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         {
             fellDownHole = true;
             dead();
-        }    
+        }
     }
 }

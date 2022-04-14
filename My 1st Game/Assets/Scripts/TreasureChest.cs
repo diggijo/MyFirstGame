@@ -22,7 +22,7 @@ public class TreasureChest : MonoBehaviour
     {
         if (isPlayerClose)
         {
-            if (Input.GetKey(KeyCode.E))
+            if (Input.GetKey(KeyCode.E) || player.Attacking)
             {
                 Open();
             }      
@@ -59,11 +59,6 @@ public class TreasureChest : MonoBehaviour
         if (other.gameObject.tag == "Player")
         {
             isPlayerClose = true;
-        }
-
-        if (other.gameObject.tag == "Sword" && player.Attacking)
-        {
-            Open();
         }
     }
 

@@ -23,12 +23,12 @@ public class ShellEnemy : EnemyController
             swordHit();
         }
 
-        else if (isCurrently == enemyState.upsideDown && other.gameObject.tag == "Player" && !player.Grounded)
+        if (isCurrently == enemyState.upsideDown && other.gameObject.tag == "Player" && !player.Grounded)
         {
             take_damage(amtDamage);
         }
 
-        else
+        if (isCurrently != enemyState.upsideDown && other.gameObject.tag == "Player")
         {
             player.take_damage(amtDamage);
         }
