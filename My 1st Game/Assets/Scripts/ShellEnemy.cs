@@ -28,7 +28,7 @@ public class ShellEnemy : EnemyController
             take_damage(amtDamage);
         }
 
-        if(isCurrently != enemyState.upsideDown && other.gameObject.tag == "Player")
+        if (isCurrently != enemyState.upsideDown && other.gameObject.tag == "Player")
         {
             player.take_damage(amtDamage);
         }
@@ -36,15 +36,13 @@ public class ShellEnemy : EnemyController
 
     internal new void swordHit()
     {
-        if (isCurrently != enemyState.flippingOver && isCurrently != enemyState.upsideDown)
-        {
-            isCurrently = enemyState.flippingOver;
-        }
-
         if (isCurrently == enemyState.upsideDown)
         {
-            print("sword hit");
             take_damage(amtDamage);
+        }
+        else if (isCurrently != enemyState.flippingOver && isCurrently != enemyState.dying)
+        {
+            isCurrently = enemyState.flippingOver;
         }
     }
 }

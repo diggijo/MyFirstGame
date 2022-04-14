@@ -15,7 +15,7 @@ public class PlayerHealth : MonoBehaviour
 
     void Start()
     {
-        immune = 1.2f;
+        immune = 2f;
         isGameOver = false;
         maxHealth = 500;
         currentHealth = maxHealth;
@@ -45,7 +45,6 @@ public class PlayerHealth : MonoBehaviour
         if (immuneTime <= 0)
         {
             currentHealth -= amtDamage;
-            player.getHit();
 
             if (currentHealth <= 0)
             {

@@ -9,6 +9,8 @@ TagManager:
   - Sword
   - Top
   - Bottom
+  - FallToDeath
+  - Spike
   layers:
   - Default
   - TransparentFX

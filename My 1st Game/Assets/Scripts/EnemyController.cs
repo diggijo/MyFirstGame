@@ -192,6 +192,7 @@ public class EnemyController : MonoBehaviour, IDamagable
 
     internal void swordHit()
     {
+    
         take_damage(50);
     }
 

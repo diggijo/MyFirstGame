@@ -6,8 +6,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour, IDamagable
 {
     private float characterSpeed;
-    private float walkSpeed;
-    private float runSpeed;
+    private const float walkSpeed = 3f;
+    private const float runSpeed = 6f;
     Animator characterAnimator;
     Rigidbody rb;
     private bool characterOnFloor = true;
@@ -16,18 +16,18 @@ public class PlayerController : MonoBehaviour, IDamagable
     public float knockBackTime;
     private float knockBackCounter;
     internal bool defending;
-    private bool attacking;
     private float swordAttack;
+    private const float swordAttackTimer = 0.5f;
     internal bool fellDownHole = false;
     PlayerHealth ph;
+    private const float jumpHeight = 5.5f;
+    private const int amtDamage = 50;
 
     internal bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
-    internal bool Attacking { get => attacking; set => attacking = value; }
+    internal bool Attacking { get; set; }
 
     void Start()
     {
-        walkSpeed = 3f;
-        runSpeed = 6f;
         characterAnimator = GetComponentInChildren<Animator>();
         ph = FindObjectOfType<PlayerHealth>();
         rb = GetComponent<Rigidbody>();
@@ -35,8 +35,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     }
 
     void Update()
-    {   
-        if(knockBackCounter <= 0 && !ph.isGameOver)
+    {
+        if (knockBackCounter <= 0 && !ph.isGameOver)
         {
             Move();
         }
@@ -47,12 +47,12 @@ public class PlayerController : MonoBehaviour, IDamagable
 
         swordAttack += Time.deltaTime;
 
-        if (swordAttack > 0.5f)
+        if (swordAttack > swordAttackTimer)
         {
-            attacking = false;
+            Attacking = false;
         }
 
-        if(coins >= 25)
+        if (coins >= 25)
         {
 
         }
@@ -69,16 +69,16 @@ public class PlayerController : MonoBehaviour, IDamagable
             transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), Time.deltaTime * 5f); //https://answers.unity.com/questions/803365/make-the-player-face-his-movement-direction.html
         }
 
-        if (moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift))
+        if (moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift) && characterOnFloor)
         {
             Walk();
         }
-        else if (moveDirection != Vector3.zero && Input.GetKey(KeyCode.LeftShift))
+        else if (moveDirection != Vector3.zero && Input.GetKey(KeyCode.LeftShift) && characterOnFloor && !defending)
         {
             Run();
         }
 
-        else if(moveDirection == Vector3.zero)
+        else if((moveDirection == Vector3.zero) && Grounded)
         {
             Idle();
         }
@@ -93,11 +93,14 @@ public class PlayerController : MonoBehaviour, IDamagable
             Defend();
         }
         else
+        {
             defending = false;
+        }
+            
 
         transform.position += characterSpeed * moveDirection * Time.deltaTime;
 
-        if(Input.GetButtonDown("Jump") && characterOnFloor)
+        if(Input.GetKey(KeyCode.Space) && characterOnFloor)
         {
             Jump();
         }
@@ -105,7 +108,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void Jump()
     {
-        rb.AddForce(new Vector3(0, 5.5f, 0), ForceMode.Impulse);
+        rb.AddForce(new Vector3(0, jumpHeight, 0), ForceMode.Impulse);
         characterAnimator.SetBool("isJumping", true);
         Grounded = false;
     }
@@ -120,7 +123,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     {
         swordAttack = 0f;
         characterAnimator.SetBool("isAttacking", true);
-        attacking = true;
+        Attacking = true;
     }
 
     private void Idle()
@@ -155,11 +158,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         characterAnimator.SetBool("takingDamage", false);
     }
 
-    public void getHit()
-    {
-        characterAnimator.SetBool("takingDamage", true);
-    }
-
     public void dead()
     {
         characterAnimator.Play("Die");
@@ -188,7 +186,8 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     public void take_damage(int amtDamage)
     {
-        ph.DamagePlayer(amtDamage); 
+        ph.DamagePlayer(amtDamage);
+        characterAnimator.Play("GetHit");
     }
 
     public void OnTriggerEnter(Collider other)
@@ -197,6 +196,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         {
             fellDownHole = true;
             dead();
-        }    
+        }
     }
 }
