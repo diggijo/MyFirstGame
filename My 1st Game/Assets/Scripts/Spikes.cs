@@ -6,7 +6,6 @@ public class Spikes : MonoBehaviour
 {
     PlayerController player;
     private const int amtDamage = 50;
-    // Start is called before the first frame update
     void Start()
     {
         player = FindObjectOfType<PlayerController>();

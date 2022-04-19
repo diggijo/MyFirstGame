@@ -25,11 +25,13 @@ public class ShellEnemy : EnemyController
 
         if (isCurrently == enemyState.upsideDown && other.gameObject.tag == "Player" && !player.Grounded)
         {
+            print("jumped on");
             take_damage(amtDamage);
         }
 
         if (isCurrently != enemyState.upsideDown && other.gameObject.tag == "Player")
         {
+            print("damage");
             player.take_damage(amtDamage);
         }
     }

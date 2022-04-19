@@ -20,8 +20,8 @@ public class PlayerController : MonoBehaviour, IDamagable
     private const float swordAttackTimer = 0.5f;
     internal bool fellDownHole = false;
     PlayerHealth ph;
+    private const float rotateSpeed = 5f;
     private const float jumpHeight = 5.5f;
-    private const int amtDamage = 50;
 
     internal bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
     internal bool Attacking { get; set; }
@@ -66,7 +66,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         Vector3 moveDirection = new Vector3(xDirection, 0, zDirection);
         if (moveDirection != Vector3.zero)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), Time.deltaTime * 5f); //https://answers.unity.com/questions/803365/make-the-player-face-his-movement-direction.html
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), Time.deltaTime * rotateSpeed); //https://answers.unity.com/questions/803365/make-the-player-face-his-movement-direction.html
         }
 
         if (moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift) && characterOnFloor)

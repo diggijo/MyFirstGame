@@ -16,13 +16,14 @@ public class EnemyController : MonoBehaviour, IDamagable
 
     internal enum enemyState { patrol, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
     internal enemyState isCurrently = enemyState.patrol;
-    private const float flipHeight = 0.6f;
+    private const float flipHeight = 1.7f;
     internal float flipTimer = 0f;
     private const float flipTimerMax = 1.1f;
     private float flipCooldown;
     private const float flipCooldownTimer = 4f;
     private float yPos;
     private const float moveYPos = 0.45f;
+    private const float flippingBack = .61f;
     private float attackTimer = 0f;
     private const float attack_Cooldown = 1.2f;
     public const int amtDamage = 50;
@@ -39,6 +40,7 @@ public class EnemyController : MonoBehaviour, IDamagable
         Collider collider = GetComponent<CapsuleCollider>();
         maxHealth = 50;
         currentHealth = maxHealth;
+        yPos = transform.position.y;
     }
 
     internal void Update()
@@ -158,7 +160,7 @@ public class EnemyController : MonoBehaviour, IDamagable
                 transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(180, 0, flipTimer)));
                 flipTimer += Time.deltaTime;
 
-                if (flipTimer >= moveYPos)
+                if (flipTimer >= flippingBack)
                 {
                     yPos -=Time.deltaTime;
                     transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
@@ -169,7 +171,6 @@ public class EnemyController : MonoBehaviour, IDamagable
                     isCurrently = enemyState.patrol;
                     flipTimer = 0;
                 }
-
                 break;
 
             case enemyState.dying:
@@ -193,7 +194,7 @@ public class EnemyController : MonoBehaviour, IDamagable
     internal void swordHit()
     {
     
-        take_damage(50);
+        take_damage(amtDamage);
     }
 
     private void OnDrawGizmosSelected()
