@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class ShellEnemy : EnemyController
 {
-    PlayerController player;
     new void Start()
     {
         base.Start();
-        player = FindObjectOfType<PlayerController>();
     }
 
     new void Update()
@@ -18,21 +16,20 @@ public class ShellEnemy : EnemyController
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Sword" && player.Attacking)
+        if (other.gameObject.tag == "Sword" && targetScript.Attacking)
         {
             swordHit();
         }
 
-        if (isCurrently == enemyState.upsideDown && other.gameObject.tag == "Player" && !player.Grounded)
+        if (isCurrently == enemyState.upsideDown && other.gameObject.tag == "Player" && !targetScript.Grounded)
         {
-            print("jumped on");
             take_damage(amtDamage);
         }
 
         if (isCurrently != enemyState.upsideDown && other.gameObject.tag == "Player")
         {
-            print("damage");
-            player.take_damage(amtDamage);
+            print("taking damage");
+            targetScript.take_damage(amtDamage);
         }
     }
 

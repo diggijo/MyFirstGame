@@ -4,12 +4,10 @@ using UnityEngine;
 
 public class SlimeEnemy : EnemyController
 {
-    PlayerController player;
     new
     void Start()
     {
         base.Start();
-        player = FindObjectOfType<PlayerController>();
     }
 
     new
@@ -20,12 +18,12 @@ public class SlimeEnemy : EnemyController
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Sword" && player.Attacking)
+        if (other.gameObject.tag == "Sword" && targetScript.Attacking)
         {
             swordHit();
         }
 
-        if (other.gameObject.tag == "Player" && !player.Grounded)
+        if (other.gameObject.tag == "Player" && !targetScript.Grounded)
         {
                 take_damage(50);  
         }

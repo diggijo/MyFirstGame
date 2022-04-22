@@ -8,14 +8,15 @@ public class EnemyController : MonoBehaviour, IDamagable
 {
     public float alertRadius = 5f;
     public float attackDistance = 1f;
-    float distance;
+    internal float distance;
     Transform target;
-    PlayerController targetScript;
+    internal PlayerController targetScript;
+    internal PlayerHealth ph;
     NavMeshAgent agent;
-    Animator enemyAnimator;
+    internal Animator enemyAnimator;
 
-    internal enum enemyState { patrol, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
-    internal enemyState isCurrently = enemyState.patrol;
+    internal enum enemyState { idle, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
+    internal enemyState isCurrently = enemyState.idle;
     private const float flipHeight = 1.7f;
     internal float flipTimer = 0f;
     private const float flipTimerMax = 1.1f;
@@ -41,6 +42,7 @@ public class EnemyController : MonoBehaviour, IDamagable
         maxHealth = 50;
         currentHealth = maxHealth;
         yPos = transform.position.y;
+        ph = FindObjectOfType<PlayerHealth>();
     }
 
     internal void Update()
@@ -61,9 +63,9 @@ public class EnemyController : MonoBehaviour, IDamagable
             
         switch (isCurrently)
         {
-            case enemyState.patrol:
+            case enemyState.idle:
 
-                if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= alertRadius)
+                if(!ph.isGameOver && distance <= alertRadius)
                 {
                     isCurrently = enemyState.moveToTarget;
                 }
@@ -76,21 +78,21 @@ public class EnemyController : MonoBehaviour, IDamagable
                 agent.SetDestination(target.position);
                 FaceTarget();
 
-                if (!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
+                if (!ph.isGameOver && distance <= attackDistance)
                 {
                     isCurrently = enemyState.attack;
                 }
                 
                 if (distance > alertRadius)
                 {
-                    isCurrently = enemyState.patrol;
+                    isCurrently = enemyState.idle;
                 }
 
                 break;
 
             case enemyState.attack:
 
-                if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
+                if(!ph.isGameOver && distance <= attackDistance)
                 {
                     if (attackTimer<=0)
                     {
@@ -168,7 +170,7 @@ public class EnemyController : MonoBehaviour, IDamagable
 
                 if (flipTimer >= flipTimerMax)
                 {
-                    isCurrently = enemyState.patrol;
+                    isCurrently = enemyState.idle;
                     flipTimer = 0;
                 }
                 break;
@@ -195,12 +197,6 @@ public class EnemyController : MonoBehaviour, IDamagable
     {
     
         take_damage(amtDamage);
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackDistance);
     }
 
     public void take_damage(int amtDamage)
