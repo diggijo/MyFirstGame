@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    private const int amtDamage = 50;
+    private const int amtDamage = 1;
     PlayerController player;
     void Start()
     {
         player = FindObjectOfType<PlayerController>();   
+    }
+
+    void Update()
+    {
+        
     }
 
     public void OnTriggerEnter(Collider other)
@@ -24,3 +29,4 @@ public class Projectile : MonoBehaviour
         }
     }
 }
+

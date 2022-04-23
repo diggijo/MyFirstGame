@@ -6,7 +6,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour, IDamagable
 {
     private float characterSpeed;
-    private const float walkSpeed = 3f;
+    private const float walkSpeed = 4f;
     private const float runSpeed = 6f;
     Animator characterAnimator;
     Rigidbody rb;
@@ -22,6 +22,7 @@ public class PlayerController : MonoBehaviour, IDamagable
     PlayerHealth ph;
     private const float rotateSpeed = 5f;
     private const float jumpHeight = 5.5f;
+    private const int fallDamage = 3;
 
     internal bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
     internal bool Attacking { get; set; }
@@ -173,7 +174,16 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 100, 20), "Coins: " + coins);
+        GUIStyle guiStyle = new GUIStyle(GUI.skin.label);
+        guiStyle.fontSize = 48;
+        guiStyle.fontStyle = FontStyle.Bold;
+        guiStyle.normal.textColor = Color.white;
+        guiStyle.alignment = TextAnchor.UpperRight;
+        float square = Screen.width * 0.08f;
+        float xPosition = Screen.width * .91f;
+        float yPosition = Screen.height * .01f;
+
+        GUI.Label(new Rect(xPosition, yPosition, square, square), "" + coins, guiStyle);
     }
 
     public void KnockBack(Vector3 enemyPos)
@@ -195,6 +205,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         if (other.gameObject.tag == "FallToDeath")
         {
             fellDownHole = true;
+            ph.currentHealth = 0;
             dead();
         }
     }

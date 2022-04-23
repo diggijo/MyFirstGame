@@ -25,7 +25,7 @@ public class SlimeEnemy : EnemyController
 
         if (other.gameObject.tag == "Player" && !targetScript.Grounded)
         {
-                take_damage(50);  
+                take_damage(amtDamage);  
         }
     }
 }

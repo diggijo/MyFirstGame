@@ -28,7 +28,6 @@ public class ShellEnemy : EnemyController
 
         if (isCurrently != enemyState.upsideDown && other.gameObject.tag == "Player")
         {
-            print("taking damage");
             targetScript.take_damage(amtDamage);
         }
     }
@@ -39,7 +38,8 @@ public class ShellEnemy : EnemyController
         {
             take_damage(amtDamage);
         }
-        else if (isCurrently != enemyState.flippingOver && isCurrently != enemyState.dying)
+
+        if (isCurrently != enemyState.flippingOver && isCurrently != enemyState.dying)
         {
             isCurrently = enemyState.flippingOver;
         }
