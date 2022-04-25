@@ -12,6 +12,8 @@ TagManager:
   - FallToDeath
   - Spike
   - MagicBall
+  - Heart
+  - Coin
   layers:
   - Default
   - TransparentFX

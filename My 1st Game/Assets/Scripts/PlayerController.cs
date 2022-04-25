@@ -12,10 +12,10 @@ public class PlayerController : MonoBehaviour, IDamagable
     Rigidbody rb;
     private bool characterOnFloor = true;
     public int coins;
+    public int gem;
     public float knockBackForce;
     public float knockBackTime;
     private float knockBackCounter;
-    internal bool defending;
     private float swordAttack;
     private const float swordAttackTimer = 0.5f;
     internal bool fellDownHole = false;
@@ -23,9 +23,9 @@ public class PlayerController : MonoBehaviour, IDamagable
     private const float rotateSpeed = 5f;
     private const float jumpHeight = 5.5f;
     private const int fallDamage = 3;
-
     internal bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
     internal bool Attacking { get; set; }
+    internal bool defending;
 
     void Start()
     {
@@ -51,11 +51,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         if (swordAttack > swordAttackTimer)
         {
             Attacking = false;
-        }
-
-        if (coins >= 25)
-        {
-
         }
     }
 

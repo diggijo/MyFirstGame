@@ -8,21 +8,18 @@ public class Wizard : MonoBehaviour, IDamagable
     internal enemyState isCurrently = enemyState.idle;
     Animator enemyAnimator;
     Transform wand;
-    GameObject magicBall;
     Transform target;
+    public Projectile projectilePrefab;
     PlayerController player;
     PlayerHealth ph;
-    public GameObject magic_Ball_template;
-    /*private float animation_timer = 0;
-    private float magic_start = 0.75f;
-    private float magic_end = 2.5f; 
-    private float total_animation = 3f;*/
     private const float alertRadius = 10f;
     public const int amtDamage = 1;
     private int currentHealth;
     private const int maxHealth = 1;
     private float distance;
     private const float faceTargetSpeed = 5f;
+    private float attackTimer = 0f;
+    private const float attackCooldown = 1.33f;
 
     void Start()
     {
@@ -31,15 +28,12 @@ public class Wizard : MonoBehaviour, IDamagable
         player = target.GetComponent<PlayerController>();
         ph = FindObjectOfType<PlayerHealth>();
         wand = find_Wand();
-        magicBall = Instantiate(magic_Ball_template, wand);
-        magicBall.SetActive(false);
         enemyAnimator = GetComponentInChildren<Animator>();
     }
 
     void Update()
     {
-        FaceTarget();
-
+        attackTimer -= Time.deltaTime;
         distance = Vector3.Distance(target.position, transform.position);
 
         if (FindObjectOfType<PlayerHealth>().isGameOver)
@@ -51,8 +45,6 @@ public class Wizard : MonoBehaviour, IDamagable
         {
             case enemyState.idle:
 
-                magicBall.SetActive(false);
-
                 if (!ph.isGameOver && distance <= alertRadius)
                 {
                     isCurrently = enemyState.attack;
@@ -62,6 +54,14 @@ public class Wizard : MonoBehaviour, IDamagable
 
             case enemyState.attack:
 
+                FaceTarget();
+
+                if (attackTimer <= 0)
+                {
+                    attackTimer = attackCooldown;
+                    Instantiate(projectilePrefab, wand.position, transform.rotation);
+                }
+
                 enemyAnimator.SetBool("isAttacking", true);
 
                 if (!ph.isGameOver && distance > alertRadius)
@@ -69,8 +69,6 @@ public class Wizard : MonoBehaviour, IDamagable
                     isCurrently = enemyState.idle;
                     enemyAnimator.SetBool("isAttacking", false);
                 }
-
-                magicBall.SetActive(true);
 
                 break;
 

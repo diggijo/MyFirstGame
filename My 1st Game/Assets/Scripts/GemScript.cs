@@ -2,20 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CoinScript : Collectables
+public class GemScript : Collectables
 {
-    public GameObject gem;
+    void Update()
+    {
+        transform.Rotate(0, 90 * Time.deltaTime, 0);
+    }
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
         {
-            player.coins++;
+            player.gem++;
             Destroy(gameObject);
-
-            if (player.coins == 2)
-            {
-                Instantiate(gem, new Vector3(2, 11, 175), Quaternion.identity);
-            }
         }
     }
 }

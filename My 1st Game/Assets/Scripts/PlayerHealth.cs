@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public const int maxHealth = 3;
+    public int maxHealth = 3;
     public int currentHealth;
     PlayerController player;
     public bool isGameOver;
@@ -39,7 +39,6 @@ public class PlayerHealth : MonoBehaviour
         {
             isGameOver = true;
         }
-        UpdateHealth();
     }
 
     public void DamagePlayer(int amtDamage)
@@ -59,6 +58,8 @@ public class PlayerHealth : MonoBehaviour
                 immuneTime = immune;
             }
         }
+
+        UpdateHealth();
     }
 
     public IEnumerator resetGame()
@@ -80,5 +81,10 @@ public class PlayerHealth : MonoBehaviour
                 hearts[i].color = Color.black;
             }
         }
+    }
+    public void addHealth()
+    {
+        currentHealth++;
+        UpdateHealth();
     }
 }
