@@ -6,12 +6,16 @@ public class Projectile : MonoBehaviour
 {
     private const int amtDamage = 1;
     PlayerController player;
+    EnemyController enemy;
+    Wizard wiz;
     private float speed = 6f;
     private float destroyTime = 2.5f;
 
     void Start()
     {
         player = FindObjectOfType<PlayerController>();
+        enemy = FindObjectOfType<EnemyController>();
+        wiz = FindObjectOfType<Wizard>();
     }
 
     void Update()
@@ -23,7 +27,7 @@ public class Projectile : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Player")
+        if ((other.gameObject.tag == "Player" && !player.defending) || (other.gameObject.tag == "Player" && player.defending && !enemy.playerNotFacing(wiz.target)))
         {
             player.take_damage(amtDamage);
             Destroy(gameObject);

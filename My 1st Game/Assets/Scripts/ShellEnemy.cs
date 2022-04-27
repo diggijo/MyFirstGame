@@ -26,7 +26,7 @@ public class ShellEnemy : EnemyController
             take_damage(amtDamage);
         }
 
-        if (isCurrently != enemyState.upsideDown && other.gameObject.tag == "Player")
+        if (isCurrently != enemyState.upsideDown && other.gameObject.tag == "Player" && isCurrently != enemyState.dying && !targetScript.defending)
         {
             targetScript.take_damage(amtDamage);
         }

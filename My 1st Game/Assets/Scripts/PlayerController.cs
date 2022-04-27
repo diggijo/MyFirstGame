@@ -156,7 +156,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     public void dead()
     {
-        characterAnimator.Play("Die");
+        characterAnimator.SetBool("isDead", true);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -186,7 +186,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         knockBackCounter = knockBackTime;
         Vector3 damageDirection = enemyPos - transform.position;
         damageDirection = damageDirection.normalized;
-        rb.AddForce(damageDirection * knockBackForce * 100);
+        rb.AddForce(damageDirection * knockBackForce);
     }
 
     public void take_damage(int amtDamage)
@@ -200,7 +200,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         if (other.gameObject.tag == "FallToDeath")
         {
             fellDownHole = true;
-            ph.currentHealth = 0;
             dead();
         }
     }

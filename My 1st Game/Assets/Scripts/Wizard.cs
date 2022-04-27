@@ -8,7 +8,7 @@ public class Wizard : MonoBehaviour, IDamagable
     internal enemyState isCurrently = enemyState.idle;
     Animator enemyAnimator;
     Transform wand;
-    Transform target;
+    public Transform target;
     public Projectile projectilePrefab;
     PlayerController player;
     PlayerHealth ph;

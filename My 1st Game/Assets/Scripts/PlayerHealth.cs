@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
+    public static event Action OnPlayerDeath;
     public int maxHealth = 3;
     public int currentHealth;
     PlayerController player;
@@ -28,7 +29,7 @@ public class PlayerHealth : MonoBehaviour
     {
         if(isGameOver)
         {
-            StartCoroutine(resetGame());
+            OnPlayerDeath?.Invoke();
         }
         if (immuneTime > 0)
         {
@@ -38,6 +39,8 @@ public class PlayerHealth : MonoBehaviour
         if(player.fellDownHole)
         {
             isGameOver = true;
+            currentHealth = 0;
+            UpdateHealth();
         }
     }
 
@@ -60,12 +63,6 @@ public class PlayerHealth : MonoBehaviour
         }
 
         UpdateHealth();
-    }
-
-    public IEnumerator resetGame()
-    {
-        yield return new WaitForSeconds(5f);
-        SceneManager.LoadScene("MainGame");
     }
 
     public void UpdateHealth()

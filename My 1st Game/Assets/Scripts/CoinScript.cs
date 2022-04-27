@@ -5,6 +5,7 @@ using UnityEngine;
 public class CoinScript : Collectables
 {
     public GameObject gem;
+
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.tag == "Player")
@@ -12,7 +13,7 @@ public class CoinScript : Collectables
             player.coins++;
             Destroy(gameObject);
 
-            if (player.coins == 2)
+            if (player.coins == 80)
             {
                 Instantiate(gem, new Vector3(2, 11, 175), Quaternion.identity);
             }
