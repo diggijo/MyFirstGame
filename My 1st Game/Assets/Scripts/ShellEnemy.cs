@@ -4,11 +4,9 @@ using UnityEngine;
 
 public class ShellEnemy : EnemyController
 {
-    PlayerController player;
     new void Start()
     {
         base.Start();
-        player = FindObjectOfType<PlayerController>();
     }
 
     new void Update()
@@ -18,19 +16,19 @@ public class ShellEnemy : EnemyController
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Sword" && player.Attacking)
+        if (other.gameObject.tag == "Sword" && targetScript.Attacking)
         {
             swordHit();
         }
 
-        if (isCurrently == enemyState.upsideDown && other.gameObject.tag == "Player" && !player.Grounded)
+        if (isCurrently == enemyState.upsideDown && other.gameObject.tag == "Player" && !targetScript.Grounded)
         {
             take_damage(amtDamage);
         }
 
-        if (isCurrently != enemyState.upsideDown && other.gameObject.tag == "Player")
+        if (isCurrently != enemyState.upsideDown && other.gameObject.tag == "Player" && isCurrently != enemyState.dying && !targetScript.defending)
         {
-            player.take_damage(amtDamage);
+            targetScript.take_damage(amtDamage);
         }
     }
 
@@ -40,7 +38,8 @@ public class ShellEnemy : EnemyController
         {
             take_damage(amtDamage);
         }
-        else if (isCurrently != enemyState.flippingOver && isCurrently != enemyState.dying)
+
+        if (isCurrently != enemyState.flippingOver && isCurrently != enemyState.dying)
         {
             isCurrently = enemyState.flippingOver;
         }

@@ -6,25 +6,26 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour, IDamagable
 {
     private float characterSpeed;
-    private const float walkSpeed = 3f;
+    private const float walkSpeed = 4f;
     private const float runSpeed = 6f;
     Animator characterAnimator;
     Rigidbody rb;
     private bool characterOnFloor = true;
     public int coins;
+    public int gem;
     public float knockBackForce;
     public float knockBackTime;
     private float knockBackCounter;
-    internal bool defending;
     private float swordAttack;
     private const float swordAttackTimer = 0.5f;
     internal bool fellDownHole = false;
     PlayerHealth ph;
+    private const float rotateSpeed = 5f;
     private const float jumpHeight = 5.5f;
-    private const int amtDamage = 50;
-
+    private const int fallDamage = 3;
     internal bool Grounded { get { return characterOnFloor; } set { characterOnFloor = value; characterAnimator.SetBool("isGrounded", value); } }
     internal bool Attacking { get; set; }
+    internal bool defending;
 
     void Start()
     {
@@ -51,11 +52,6 @@ public class PlayerController : MonoBehaviour, IDamagable
         {
             Attacking = false;
         }
-
-        if (coins >= 25)
-        {
-
-        }
     }
 
     private void Move()
@@ -66,7 +62,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         Vector3 moveDirection = new Vector3(xDirection, 0, zDirection);
         if (moveDirection != Vector3.zero)
         {
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), Time.deltaTime * 5f); //https://answers.unity.com/questions/803365/make-the-player-face-his-movement-direction.html
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(moveDirection), Time.deltaTime * rotateSpeed); //https://answers.unity.com/questions/803365/make-the-player-face-his-movement-direction.html
         }
 
         if (moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift) && characterOnFloor)
@@ -160,7 +156,7 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     public void dead()
     {
-        characterAnimator.Play("Die");
+        characterAnimator.SetBool("isDead", true);
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -173,7 +169,16 @@ public class PlayerController : MonoBehaviour, IDamagable
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 100, 20), "Coins: " + coins);
+        GUIStyle guiStyle = new GUIStyle(GUI.skin.label);
+        guiStyle.fontSize = 48;
+        guiStyle.fontStyle = FontStyle.Bold;
+        guiStyle.normal.textColor = Color.white;
+        guiStyle.alignment = TextAnchor.UpperRight;
+        float square = Screen.width * 0.08f;
+        float xPosition = Screen.width * .91f;
+        float yPosition = Screen.height * .01f;
+
+        GUI.Label(new Rect(xPosition, yPosition, square, square), "" + coins, guiStyle);
     }
 
     public void KnockBack(Vector3 enemyPos)
@@ -181,7 +186,7 @@ public class PlayerController : MonoBehaviour, IDamagable
         knockBackCounter = knockBackTime;
         Vector3 damageDirection = enemyPos - transform.position;
         damageDirection = damageDirection.normalized;
-        rb.AddForce(damageDirection * knockBackForce * 100);
+        rb.AddForce(damageDirection * knockBackForce);
     }
 
     public void take_damage(int amtDamage)

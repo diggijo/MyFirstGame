@@ -5,8 +5,7 @@ using UnityEngine;
 public class Spikes : MonoBehaviour
 {
     PlayerController player;
-    private const int amtDamage = 50;
-    // Start is called before the first frame update
+    private const int amtDamage = 1;
     void Start()
     {
         player = FindObjectOfType<PlayerController>();

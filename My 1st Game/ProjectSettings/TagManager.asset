@@ -7,10 +7,12 @@ TagManager:
   - Ground
   - Enemy
   - Sword
-  - Top
-  - Bottom
   - FallToDeath
   - Spike
+  - MagicBall
+  - Heart
+  - Coin
+  - Gem
   layers:
   - Default
   - TransparentFX

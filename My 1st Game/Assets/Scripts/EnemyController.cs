@@ -8,27 +8,30 @@ public class EnemyController : MonoBehaviour, IDamagable
 {
     public float alertRadius = 5f;
     public float attackDistance = 1f;
-    float distance;
+    internal float distance;
     Transform target;
-    PlayerController targetScript;
+    internal PlayerController targetScript;
+    internal PlayerHealth ph;
     NavMeshAgent agent;
-    Animator enemyAnimator;
+    internal Animator enemyAnimator;
 
-    internal enum enemyState { patrol, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
-    internal enemyState isCurrently = enemyState.patrol;
-    private const float flipHeight = 0.6f;
+    internal enum enemyState { idle, moveToTarget, attack, dying , flippingOver, upsideDown, flippingBack};
+    internal enemyState isCurrently = enemyState.idle;
+    private const float flipHeight = 1.7f;
     internal float flipTimer = 0f;
     private const float flipTimerMax = 1.1f;
     private float flipCooldown;
     private const float flipCooldownTimer = 4f;
     private float yPos;
     private const float moveYPos = 0.45f;
+    private const float flippingBack = .61f;
     private float attackTimer = 0f;
     private const float attack_Cooldown = 1.2f;
-    public const int amtDamage = 50;
+    public const int amtDamage = 1;
     private int currentHealth;
-    private int maxHealth;
+    private const int maxHealth = 1;
     private const float faceTargetSpeed = 5f;
+    internal bool isAttacking;
 
     internal void Start()
     {
@@ -37,8 +40,9 @@ public class EnemyController : MonoBehaviour, IDamagable
         agent = GetComponent<NavMeshAgent>();
         enemyAnimator = GetComponentInChildren<Animator>();
         Collider collider = GetComponent<CapsuleCollider>();
-        maxHealth = 50;
         currentHealth = maxHealth;
+        yPos = transform.position.y;
+        ph = FindObjectOfType<PlayerHealth>();
     }
 
     internal void Update()
@@ -49,6 +53,7 @@ public class EnemyController : MonoBehaviour, IDamagable
         if (isCurrently != enemyState.attack)
         {
             enemyAnimator.SetBool("isAttacking", false);
+            isAttacking = false;
         }
 
         if (FindObjectOfType<PlayerHealth>().isGameOver)
@@ -59,9 +64,9 @@ public class EnemyController : MonoBehaviour, IDamagable
             
         switch (isCurrently)
         {
-            case enemyState.patrol:
+            case enemyState.idle:
 
-                if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= alertRadius)
+                if(!ph.isGameOver && distance <= alertRadius)
                 {
                     isCurrently = enemyState.moveToTarget;
                 }
@@ -74,21 +79,22 @@ public class EnemyController : MonoBehaviour, IDamagable
                 agent.SetDestination(target.position);
                 FaceTarget();
 
-                if (!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
+                if (!ph.isGameOver && distance <= attackDistance)
                 {
                     isCurrently = enemyState.attack;
+                    isAttacking = true;
                 }
                 
                 if (distance > alertRadius)
                 {
-                    isCurrently = enemyState.patrol;
+                    isCurrently = enemyState.idle;
                 }
 
                 break;
 
             case enemyState.attack:
 
-                if(!FindObjectOfType<PlayerHealth>().isGameOver && distance <= attackDistance)
+                if(!ph.isGameOver && distance <= attackDistance)
                 {
                     if (attackTimer<=0)
                     {
@@ -158,7 +164,7 @@ public class EnemyController : MonoBehaviour, IDamagable
                 transform.rotation = Quaternion.Euler(new Vector3(0, 0, Mathf.Lerp(180, 0, flipTimer)));
                 flipTimer += Time.deltaTime;
 
-                if (flipTimer >= moveYPos)
+                if (flipTimer >= flippingBack)
                 {
                     yPos -=Time.deltaTime;
                     transform.position = new Vector3(transform.position.x, yPos, transform.position.z);
@@ -166,10 +172,9 @@ public class EnemyController : MonoBehaviour, IDamagable
 
                 if (flipTimer >= flipTimerMax)
                 {
-                    isCurrently = enemyState.patrol;
+                    isCurrently = enemyState.idle;
                     flipTimer = 0;
                 }
-
                 break;
 
             case enemyState.dying:
@@ -180,7 +185,7 @@ public class EnemyController : MonoBehaviour, IDamagable
         }
     }
 
-    private void FaceTarget()
+    internal void FaceTarget()
     {
         Vector3 direction = (target.position - transform.position).normalized;
         if(direction != Vector3.zero)
@@ -193,13 +198,7 @@ public class EnemyController : MonoBehaviour, IDamagable
     internal void swordHit()
     {
     
-        take_damage(50);
-    }
-
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, attackDistance);
+        take_damage(amtDamage);
     }
 
     public void take_damage(int amtDamage)

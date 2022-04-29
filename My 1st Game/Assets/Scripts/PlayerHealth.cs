@@ -3,30 +3,33 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
-    public int maxHealth;
+    public static event Action OnPlayerDeath;
+    public int maxHealth = 3;
     public int currentHealth;
     PlayerController player;
     public bool isGameOver;
     private float immuneTime;
     private float immune;
+    [SerializeField] private Image[] hearts;
 
     void Start()
     {
         immune = 2f;
         isGameOver = false;
-        maxHealth = 500;
         currentHealth = maxHealth;
         player = FindObjectOfType<PlayerController>();
+        UpdateHealth();
     }
 
     void Update()
     {
         if(isGameOver)
         {
-            StartCoroutine(resetGame());
+            OnPlayerDeath?.Invoke();
         }
         if (immuneTime > 0)
         {
@@ -36,8 +39,9 @@ public class PlayerHealth : MonoBehaviour
         if(player.fellDownHole)
         {
             isGameOver = true;
+            currentHealth = 0;
+            UpdateHealth();
         }
-
     }
 
     public void DamagePlayer(int amtDamage)
@@ -57,11 +61,27 @@ public class PlayerHealth : MonoBehaviour
                 immuneTime = immune;
             }
         }
+
+        UpdateHealth();
     }
 
-    public IEnumerator resetGame()
+    public void UpdateHealth()
     {
-        yield return new WaitForSeconds(5f);
-        SceneManager.LoadScene("MainGame");
+        for (int i = 0; i < hearts.Length; i++)
+        {
+            if (i < currentHealth)
+            {
+                hearts[i].color = Color.red;
+            }
+            else
+            {
+                hearts[i].color = Color.black;
+            }
+        }
+    }
+    public void addHealth()
+    {
+        currentHealth++;
+        UpdateHealth();
     }
 }
