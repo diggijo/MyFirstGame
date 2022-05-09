@@ -5,6 +5,8 @@ using UnityEngine;
 public class CoinScript : Collectables
 {
     public GameObject gem;
+    private int totalCoins = 80;
+    Vector3 gemSpawn = new Vector3(2, 11, 175);
 
     private void OnTriggerEnter(Collider other)
     {
@@ -13,9 +15,9 @@ public class CoinScript : Collectables
             player.coins++;
             Destroy(gameObject);
 
-            if (player.coins == 80)
+            if (player.coins == totalCoins)
             {
-                Instantiate(gem, new Vector3(2, 11, 175), Quaternion.identity);
+                Instantiate(gem, gemSpawn, Quaternion.identity);
             }
         }
     }
